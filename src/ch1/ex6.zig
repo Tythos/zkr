@@ -1,3 +1,4 @@
+/// src/ch1/ex6.zig
 const std = @import("std");
 
 /// defines a useful STDOUT writer that combines the std.io File, buffered
@@ -43,5 +44,6 @@ fn arange(start: f64, end: f64, step: f64) !std.ArrayList(f64) {
 }
 
 pub fn main() !void {
-    try STDOUT("{}\n", .{null});
+    const line: []u8 = try STDIN();
+    std.debug.print("{s}\n", .{line});
 }
