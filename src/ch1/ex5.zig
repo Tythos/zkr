@@ -1,4 +1,4 @@
-/// src/main.zig
+/// src/ch1/ex5.zig
 const std = @import("std");
 
 /// defines a useful STDOUT writer that combines the std.io File, buffered
@@ -12,6 +12,8 @@ fn STDOUT(comptime str: []const u8, fmt: anytype) !void {
 
 // fn linspace(start: f64, stop: f64, n: i32) []f64 {}
 
+/// defines a numpy.arange analog for generating (allocating) a list of
+/// floating point values between start and end with the given step size
 fn arange(start: f64, end: f64, step: f64) !std.ArrayList(f64) {
     const allocator = std.heap.page_allocator;
     var result = std.ArrayList(f64).init(allocator);
