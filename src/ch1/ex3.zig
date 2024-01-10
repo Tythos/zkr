@@ -1,4 +1,4 @@
-/// src/main.zig
+/// src/ch1/ex3.zig
 const std = @import("std");
 
 /// defines a useful STDOUT writer that combines the std.io File, buffered
@@ -14,15 +14,15 @@ pub fn main() !void {
     var fahr: f32 = 0.0;
     var celsius: f32 = 0.0;
     var lower: f32 = 0.0;
-    var upper: f32 = 100.0;
-    var step: f32 = 10.0;
+    var upper: f32 = 300.0;
+    var step: f32 = 20.0;
 
-    try STDOUT("{s}\t{s}\n", .{ "C", "F" });
+    try STDOUT("{s}\t{s}\n", .{ "F", "C" });
     try STDOUT("{s}\t{s}\n", .{ "===", "===" });
-    celsius = lower;
-    while (celsius <= upper) {
-        fahr = celsius * (9.0 / 5.0) + 32.0;
-        try STDOUT("{d}\t{d}\n", .{ celsius, fahr });
-        celsius += step;
+    fahr = lower;
+    while (fahr <= upper) {
+        celsius = (5.0 / 9.0) * (fahr - 32.0);
+        try STDOUT("{d}\t{d}\n", .{ fahr, celsius });
+        fahr += step;
     }
 }

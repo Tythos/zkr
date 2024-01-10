@@ -1,4 +1,4 @@
-/// src/main.zig
+/// src/ch1/ex4.zig
 const std = @import("std");
 
 /// defines a useful STDOUT writer that combines the std.io File, buffered
