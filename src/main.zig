@@ -11,5 +11,5 @@ fn STDOUT(comptime str: []const u8, fmt: anytype) !void {
 }
 
 pub fn main() !void {
-    try STDOUT("hello, world\n", .{});
+    try STDOUT("hello,\\qworld\n", .{});
 }

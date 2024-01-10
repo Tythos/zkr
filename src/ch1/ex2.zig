@@ -1,4 +1,4 @@
-/// src/ch1/ex1.zig
+/// src/ch1/ex2.zig
 const std = @import("std");
 
 /// defines a useful STDOUT writer that combines the std.io File, buffered
@@ -11,5 +11,5 @@ fn STDOUT(comptime str: []const u8, fmt: anytype) !void {
 }
 
 pub fn main() !void {
-    try STDOUT("hello, world\n", .{});
+    try STDOUT("hello,\\qworld\n", .{});
 }
