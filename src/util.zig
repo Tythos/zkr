@@ -153,3 +153,64 @@ pub fn disambiguateString(allocator: std.mem.Allocator, line: []const u8) ![]con
     }
     return longer;
 }
+
+pub fn getNumLines(line: []const u8) u32 {
+    // line boundary is defined by non-sequential newline
+    var isNewline: bool = false;
+    var nWords: u32 = 0;
+    for (line) |char| {
+        if (char == '\n') {
+            if (!isNewline) {
+                isNewline = true;
+                nWords += 1;
+            }
+        } else {
+            isNewline = false;
+        }
+    }
+    return nWords;
+}
+
+pub fn getNumWords(line: []const u8) u32 {
+    // word boundary is defined by non-sequential whitespace
+    var isWhitespace: bool = false;
+    var nWords: u32 = 1;
+    for (line) |char| {
+        if (char == ' ' or char == '\t' or char == '\n') {
+            if (!isWhitespace) {
+                isWhitespace = true;
+                nWords += 1;
+            }
+        } else {
+            isWhitespace = false;
+        }
+    }
+    return nWords;
+}
+
+pub fn getNumChars(line: []const u8) u32 {
+    // account for terminal
+    return @intCast(line.len - 1);
+}
+
+pub fn replaceWhitespaceWithNewline(allocator: std.mem.Allocator, line: []const u8) ![]u8 {
+    const after: u32 = getConsolidatedLength(line);
+    const lines = try allocator.alloc(u8, after);
+    errdefer allocator.free(lines);
+    var i: u32 = 0;
+    var isFirstWhitespace: bool = false;
+    for (line) |char| {
+        if (char == ' ' or char == '\t' or char == '\n') {
+            if (isFirstWhitespace) {
+                isFirstWhitespace = false;
+                lines[i] = '\n';
+                i += 1;
+            }
+        } else {
+            isFirstWhitespace = true;
+            lines[i] = char;
+            i += 1;
+        }
+    }
+    return lines;
+}
