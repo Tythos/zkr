@@ -32,9 +32,9 @@ fn arange(start: f64, end: f64, step: f64) !std.ArrayList(f64) {
 
 pub fn main() !void {
     var celsius: f64 = 0.0;
-    var lower: f64 = 0.0;
-    var upper: f64 = 300.0;
-    var step: f64 = 30.0;
+    const lower: f64 = 0.0;
+    const upper: f64 = 300.0;
+    const step: f64 = 30.0;
 
     try STDOUT("{s}\t{s}\n", .{ "F", "C" });
     try STDOUT("{s}\t{s}\n", .{ "===", "===" });

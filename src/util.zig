@@ -70,11 +70,13 @@ fn getConsolidatedLength(input: []const u8) u32 {
     return result;
 }
 
+/// Returns a new string defined by the given string with any whitespace
+/// sequences replaced by a single space.
 pub fn consolidateString(allocator: std.mem.Allocator, line: []const u8) ![]const u8 {
     // allocate line read from STDIN, compute lengths
-    const before = line.len;
     const after = getConsolidatedLength(line);
-    try STDOUT("consolidated from {} to {} characters (reduction of {})\n", .{ before, after, before - after });
+    //const before = line.len;
+    //try STDOUT("consolidated from {} to {} characters (reduction of {})\n", .{ before, after, before - after });
 
     // allocate "shorter" string from length
     var shorter = try allocator.alloc(u8, after);
@@ -99,4 +101,55 @@ pub fn consolidateString(allocator: std.mem.Allocator, line: []const u8) ![]cons
         }
     }
     return shorter;
+}
+
+/// Returns the length of a hypothetical string in which special characters are
+/// replaced with their "escaped" character string equivalents.
+pub fn getDisambiguatedLength(input: []const u8) u32 {
+    var result: u32 = 0;
+    for (input) |char| {
+        if (char == '\t') {
+            // will be replaced by litteral "\t"
+            result += 2;
+            // } else if (char == '\b') {
+            // will be replaced by litteral "\b"
+            // result += 2;
+        } else if (char == '\\') {
+            // will be replaced by litteral "\\"
+            result += 2;
+        } else {
+            result += 1;
+        }
+    }
+    return result;
+}
+
+/// Returns a new string defined by the given string with any special
+/// characters replaced with their "escaped" character string equivalent.
+pub fn disambiguateString(allocator: std.mem.Allocator, line: []const u8) ![]const u8 {
+    const after = getDisambiguatedLength(line);
+    var longer = try allocator.alloc(u8, after);
+    errdefer allocator.free(longer);
+    var i: u32 = 0;
+
+    // iterate over characters in original string and copy
+    for (line) |char| {
+        if (char == '\t') {
+            longer[i] = '\\';
+            longer[i + 1] = 't';
+            i += 2;
+            // } else if (char == '\b') {
+            //     longer[i] = '\\';
+            //     longer[i + 1] = 'b';
+            //     i += 2;
+        } else if (char == '\\') {
+            longer[i] = '\\';
+            longer[i + 1] = '\\';
+            i += 2;
+        } else {
+            longer[i] = char;
+            i += 1;
+        }
+    }
+    return longer;
 }

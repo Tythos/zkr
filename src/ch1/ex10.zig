@@ -1,3 +1,4 @@
+/// src/ch1/ex10.zig
 const std = @import("std");
 const util = @import("./util.zig");
 
