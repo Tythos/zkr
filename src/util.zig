@@ -260,3 +260,11 @@ pub fn getCharCounts(line: []const u8, allocator: std.mem.Allocator) !std.AutoAr
     }
     return counts;
 }
+
+pub fn c2f(c: f64) f64 {
+    return c * (9.0 / 5.0) + 32.0;
+}
+
+pub fn f2c(f: f64) f64 {
+    return (5.0 / 9.0) * (f - 32.0);
+}
