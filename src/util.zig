@@ -214,3 +214,49 @@ pub fn replaceWhitespaceWithNewline(allocator: std.mem.Allocator, line: []const 
     }
     return lines;
 }
+
+pub fn getWordLengthCounts(line: []const u8, allocator: std.mem.Allocator) !std.AutoArrayHashMap(u32, u32) {
+    var counts = std.AutoArrayHashMap(u32, u32).init(allocator);
+
+    // iterate with whitespace between word boundaries
+    var i: u32 = 0;
+    var isWhitespace: bool = false;
+    for (line, 0..) |char, j| {
+        if (char == ' ' or char == '\t') {
+            // if it's whitespace, push previous length if it's the first and reset
+            if (!isWhitespace) {
+                const v = try counts.getOrPut(i);
+                if (!v.found_existing) {
+                    v.value_ptr.* = 0;
+                }
+                v.value_ptr.* += 1;
+            }
+            isWhitespace = true;
+            i = 0;
+        } else {
+            // if it's not whitespace, increment length, unless it's the last character
+            isWhitespace = false;
+            if (j == line.len - 1) {
+                const v = try counts.getOrPut(i);
+                if (!v.found_existing) {
+                    v.value_ptr.* = 0;
+                }
+                v.value_ptr.* += 1;
+            }
+            i += 1;
+        }
+    }
+    return counts;
+}
+
+pub fn getCharCounts(line: []const u8, allocator: std.mem.Allocator) !std.AutoArrayHashMap(u8, u32) {
+    var counts = std.AutoArrayHashMap(u8, u32).init(allocator);
+    for (line) |char| {
+        const v = try counts.getOrPut(char);
+        if (!v.found_existing) {
+            v.value_ptr.* = 0;
+        }
+        v.value_ptr.* += 1;
+    }
+    return counts;
+}
