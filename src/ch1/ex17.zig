@@ -2,14 +2,18 @@ const std = @import("std");
 const util = @import("./util.zig");
 
 pub fn main() !void {
+    var max: usize = 0;
+    var line: []const u8 = undefined;
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
     //
-    var line = try util.STDIN(allocator, false);
+    max = 0;
+    line = try util.STDIN(allocator, false);
     while (line.len > 0) {
-        const reversed: []const u8 = try util.reverse(allocator, line);
-        try util.STDOUT("'{s}' => '{s}'\n", .{ line, reversed });
+        if (line.len > 80) {
+            try util.STDOUT("{s}\n", .{line});
+        }
         line = try util.STDIN(allocator, false);
     }
 }

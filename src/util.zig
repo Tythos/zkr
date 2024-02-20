@@ -12,8 +12,9 @@ pub fn STDOUT(comptime str: []const u8, fmt: anytype) !void {
 
 /// Defines a useful STIN reader that combines the std.io File, buffered
 /// reader, and a blank-string fallback. The string is allocated on up to 1024
-/// bytes of the stack. Reading may fail.
-pub fn STDIN(allocator: std.mem.Allocator) ![]const u8 {
+/// bytes of the stack. Reading may fail. Because the buffer reader includes
+/// all keypresses, there is an option to ignore the final "ENTER" (CR/LF).
+pub fn STDIN(allocator: std.mem.Allocator, isTerminalIncluded: bool) ![]const u8 {
     const stdin = std.io.getStdIn().reader();
     var buffer = std.io.bufferedReader(stdin);
     std.debug.print("> ", .{});
@@ -24,7 +25,11 @@ pub fn STDIN(allocator: std.mem.Allocator) ![]const u8 {
         const strbuf = try allocator.alloc(u8, line.len);
         errdefer allocator.free(strbuf);
         @memcpy(strbuf, line);
-        return strbuf;
+        if (isTerminalIncluded) {
+            return strbuf;
+        } else {
+            return strbuf[0 .. strbuf.len - 1];
+        }
     } else {
         return "";
     }
@@ -267,4 +272,47 @@ pub fn c2f(c: f64) f64 {
 
 pub fn f2c(f: f64) f64 {
     return (5.0 / 9.0) * (f - 32.0);
+}
+
+pub fn trim(allocator: std.mem.Allocator, from: []const u8) ![]u8 {
+    // first determine how many whitespace characters there are from the beginning
+    var isWhitespace: bool = true;
+    var iFront: usize = 0;
+    while (isWhitespace) {
+        const char: u8 = from[iFront];
+        if (char == ' ' or char == '\t' or char == '\n' or char == '\r') {
+            iFront += 1;
+        } else {
+            isWhitespace = false;
+        }
+    }
+
+    // second determine how many whitespace characters there are from the end
+    isWhitespace = true;
+    var iBack: usize = 0;
+    while (isWhitespace) {
+        const char: u8 = from[from.len - iBack - 1];
+        if (char == ' ' or char == '\t' or char == '\n' or char == '\r') {
+            iBack += 1;
+        } else {
+            isWhitespace = false;
+        }
+    }
+
+    // lastly, allocate and copy to the return value
+    const n: usize = from.len - iFront - iBack;
+    var to: []u8 = try allocator.alloc(u8, n);
+    for (iFront..iFront + n) |i| {
+        to[i - iFront] = from[i];
+    }
+    return to;
+}
+
+pub fn reverse(allocator: std.mem.Allocator, from: []const u8) ![]u8 {
+    const n: usize = from.len;
+    var to: []u8 = try allocator.alloc(u8, n);
+    for (from, 0..) |char, i| {
+        to[n - i - 1] = char;
+    }
+    return to;
 }
